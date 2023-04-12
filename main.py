@@ -9,14 +9,17 @@ from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 from flask_gravatar import Gravatar
-from sqlalchemy import Table, Column, Integer, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
+import os
+from dotenv import load_dotenv
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 ckeditor = CKEditor(app)
 Bootstrap(app)
+load_dotenv(".config/.env")
+app.config['SECRET_KEY'] = os.getenv("MY_SECRET_KEY")
+
 
 ##CONNECT TO DB
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
