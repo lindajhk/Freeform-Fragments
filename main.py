@@ -11,18 +11,16 @@ from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 from flask_gravatar import Gravatar
 from sqlalchemy.ext.declarative import declarative_base
 import os
-from dotenv import load_dotenv
 
 
 app = Flask(__name__)
 ckeditor = CKEditor(app)
 Bootstrap(app)
-load_dotenv(".config/.env")
 app.config['SECRET_KEY'] = os.getenv("MY_SECRET_KEY")
 
 
 ##CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///blog.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
