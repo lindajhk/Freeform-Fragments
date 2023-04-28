@@ -1,6 +1,9 @@
-from flask import Flask, render_template, redirect, url_for, flash, g
+import smtplib
+
+from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
+from flask_mail import Message, Mail
 from functools import wraps
 from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -18,8 +21,13 @@ ckeditor = CKEditor(app)
 Bootstrap(app)
 app.config['SECRET_KEY'] = os.getenv("MY_SECRET_KEY")
 
+# SENDING EMAILS AFTER CONTACT FORM SUBMITTED
+mail = Mail(app)
+app.config['MAIL_USERNAME'] = 'lindadevprojects@gmail.com'
 
-##CONNECT TO DB
+
+
+# CONNECT TO DB
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///blog.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -181,6 +189,32 @@ def about():
 @app.route("/contact")
 def contact():
     return render_template("contact.html", current_user=current_user)
+
+
+@app.route("/contact_form", methods=["GET", "POST"])
+def contact_form():
+    if request.method == "POST":
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        message = request.form.get('message')
+
+        MY_EMAIL = 'lindadevprojects@gmail.com'
+        MY_PASSWORD = 'uvzietaqpgxaacvr'
+
+        # Send email using smtplib
+        with smtplib.SMTP('smtp.gmail.com', 587) as connection:
+            connection.starttls()
+            result = connection.login(user=MY_EMAIL, password=MY_PASSWORD)
+            connection.sendmail(
+                from_addr=MY_EMAIL,
+                to_addrs=[email, MY_EMAIL],
+                msg=f"Subject:Thank you {name} for filling out the contact form for Linda\'s Blog!\n\nHi {name},\n\nThank you for filling out the contact form!\nLinda has received the contact request with the below information and will be in touch with you soon!\n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage: {message}"
+            )
+        flash('Your message has been sent!', 'success')
+        return redirect(url_for('contact'))
+    else:
+        return redirect(url_for('contact'))
 
 
 @app.route("/new-post", methods=["GET", "POST"])
