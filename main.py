@@ -199,9 +199,6 @@ def contact_form():
         phone = request.form.get('phone')
         message = request.form.get('message')
 
-        MY_EMAIL = 'lindadevprojects@gmail.com'
-        MY_PASSWORD = 'uvzietaqpgxaacvr'
-
         # Send email using smtplib
         with smtplib.SMTP('smtp.gmail.com', 587) as connection:
             connection.starttls()
@@ -211,7 +208,6 @@ def contact_form():
                 to_addrs=[email, MY_EMAIL],
                 msg=f"Subject:Thank you {name} for filling out the contact form for Linda\'s Blog!\n\nHi {name},\n\nThank you for filling out the contact form!\nLinda has received the contact request with the below information and will be in touch with you soon!\n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage: {message}"
             )
-        flash('Your message has been sent!', 'success')
         return redirect(url_for('contact'))
     else:
         return redirect(url_for('contact'))
